@@ -6,6 +6,8 @@ Install using composer command
 after finish install
 use "composer artisan serve" to run vitual server at 127.0.0.1:8000
 
+please sepcific x-token = "charityapp" before make request
+
 FYI:
 - route in api.php 
 - route relate with TumBoonController.php
