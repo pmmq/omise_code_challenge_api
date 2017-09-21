@@ -11,7 +11,7 @@ class TumBoonController extends Controller
     {	
     	// get data from config data.php 
     	$data = json_decode(config('data.charities'));
-    	if(empty($data)){
+    	if(!empty($data)){
     		return response()->json($data, 200);
     	}
     	$data = $this->buildError("content not found.");
@@ -27,7 +27,7 @@ class TumBoonController extends Controller
         // convert decimal to integer
         $amount = number_format($amount, 2, '.', ' ') * 100;
 
-    	if(!preg_match('/^[1-9][0-9]*$/',$id)){
+    	if(!preg_match('/^[0-9][0-9]*$/',$id)){
     		$data = $this->buildError("invalid id.");
     		return response()->json($data,400);
     	}
@@ -50,18 +50,20 @@ class TumBoonController extends Controller
 
         try {
             $charge = $this->chargeByCardToken($cardToken,$amount);
+
             $chargeError = $this->getFailedMessage($charge);
+
             if(!empty($chargeError)){
                 $data = $this->buildError($chargeError["failure_message"],$chargeError["failure_code"]);
                 return response()->json($data,400);
             }
-        } catch (\OmiseExceptions $e) {
+        } catch(\Exception $e){
             $data = $this->buildError($e->getMessage());
             return response()->json($data,400);           
         }
         
         $data["success"] = true;
-    	return response()->json($data,400);;
+    	return response()->json($data,400);
     }
 
     public function createToken($name, $number, $expiration_month, $expiration_year, $city, $postal_code, $security_code){
